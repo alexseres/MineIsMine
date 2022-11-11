@@ -19,7 +19,8 @@
 #include "ObjectManager.h"
 #include "Object.h"
 #include "Mine.h"
-
+#include "ScopedQueryPerformanceTimer.h"
+#include "Minefield.h"
 #include <time.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -27,117 +28,73 @@
 #include <stdio.h>
 
 
-class QueryPerformanceTimer
-{
-    // created private section to variable, and moved them in
-    //make constructor simplier
-private:
-    double m_start;
-    double m_stop;
-public:
-    QueryPerformanceTimer();
-
-    void Start()
-    {
-        struct timespec now;
-        clock_gettime(CLOCK_MONOTONIC, &now);
-        m_start = now.tv_sec + now.tv_nsec/1000000000.0;
-    }
-
-    double Get()
-    {
-        struct timespec now;
-        clock_gettime(CLOCK_MONOTONIC, &now);
-        m_stop = now.tv_sec + now.tv_nsec/1000000000.0;
-        double time = m_stop - m_start;
-        m_start = m_stop;
-        // time value is in micro seconds
-        return time;
-    }
-};
-
-class ScopedQueryPerformanceTimer
-{
-public:
-    ScopedQueryPerformanceTimer(const char*	aMsg = NULL)
-    {
-        m_msg = aMsg;
-        m_timer.Start();
-    }
-
-    ~ScopedQueryPerformanceTimer()
-    {
-        double timeUsed = m_timer.Get();
-        printf("%s %f\n", m_msg, timeUsed / 1000.0);
-    }
-
-    QueryPerformanceTimer m_timer;
-    const char*	m_msg;
-};
-
 static int s_numberOfWorkerThreadsActive = 0;
 static int s_numberOfWorkerThreadsStarted = 0;
 static Mutex s_lock;
 
-namespace
+
+
+
+void Minefield::FindTargets(void* aIgnored)
 {
-    void FindTargets(void* aIgnored)
     {
+        MutexLock lock(s_lock);
+        s_numberOfWorkerThreadsActive++;
+        s_numberOfWorkerThreadsStarted++;
+    }
+    bool done = false;
+    while(!done)
+    {
+        int index = ObjectManager::GetSingleton().GetNextFindTargetsIndex();
+        if(index < ObjectManager::GetSingleton().GetNumberOfObjects())
         {
-            MutexLock lock(s_lock);
-            s_numberOfWorkerThreadsActive++;
-            s_numberOfWorkerThreadsStarted++;
+            Mine* pMineObject = static_cast<Mine*>(ObjectManager::GetSingleton().GetObject(index));
+            pMineObject->FindCurrentTargets();
         }
-        bool done = false;
-        while(!done)
+        else
         {
-            int index = ObjectManager::GetSingleton().GetNextFindTargetsIndex();
-            if(index < ObjectManager::GetSingleton().GetNumberOfObjects())
-            {
-                Mine* pMineObject = static_cast<Mine*>(ObjectManager::GetSingleton().GetObject(index));
-                pMineObject->FindCurrentTargets();
-            }
-            else
-            {
-                done = true;
-            }
+            done = true;
         }
-        {
-            MutexLock lock(s_lock);
-            s_numberOfWorkerThreadsActive--;
-        }
+    }
+    {
+        MutexLock lock(s_lock);
+        s_numberOfWorkerThreadsActive--;
     }
 }
 
-class WorkerThread
+
+
+//class WorkerThread
+//{
+//public:
+//    WorkerThread();
+//    ~WorkerThread();
+//    pthread_t threadId = 0;
+//    pthread_attr_t attributes;
+////    void FindTargets(void* aIgnored);
+////    void FindTargetsForAllMines()
+////    {
+////        pthread_t threadId = 0;
+////        pthread_attr_t attributes;
+////        pthread_attr_init(&attributes);
+////        pthread_create(&threadId, &attributes, (void*(*)(void*))FindTargets, NULL);
+////    }
+//
+//    void init()
+//    {
+//        pthread_attr_init(&attributes);
+//    }
+//};
+
+void Minefield::FindTargetsForAllMines(WorkerThread wTread)
 {
-public:
-
-    WorkerThread()
-    {
-    }
-
-    ~WorkerThread()
-    {
-    }
-
-    void FindTargetsForAllMines()
-    {
-        pthread_t threadId = 0;
-        pthread_attr_t attributes;
-        pthread_attr_init(&attributes);
-        pthread_create(&threadId, &attributes, (void*(*)(void*))FindTargets, NULL);
-    }
-};
+    wTread.init();
+    pthread_create(&wTread.threadId, &wTread.attributes, (void*(*)(void*))FindTargets, NULL);
+}
 
 
 
-int g_numberOfTeams = 3;
-int g_numberOfMinesPerTeam = 1500;
-int numberOfTurns = 0;
-
-
-void announceWinner(){
+void Minefield::announceWinner(){
     int winningTeam = 0;
     int winningObjectCount = 0;
     for(int i = 0; i < g_numberOfTeams; i++)
@@ -154,7 +111,7 @@ void announceWinner(){
     printf("Team %d WINS after %d turns!!\n", winningTeam, numberOfTurns);
 }
 
-void runner(std::vector<WorkerThread*> &workerThreadList, int numberOfWorkerThreads){
+void Minefield::runner(std::vector<WorkerThread*> &workerThreadList, int numberOfWorkerThreads){
     bool targetsStillFound = true;
     while(targetsStillFound)
     {
@@ -191,15 +148,16 @@ void runner(std::vector<WorkerThread*> &workerThreadList, int numberOfWorkerThre
     }
 }
 
-std::vector<WorkerThread *> workerThreadPopulating(int numberOfWorkerThreads){
+std::vector<WorkerThread *> Minefield::workerThreadPopulating(int numberOfWorkerThreads){
     std::vector<WorkerThread*> workerThreadList;
     for(int i = 0; i < numberOfWorkerThreads; i++)
     {
         workerThreadList.push_back(new WorkerThread());
     }
+    return workerThreadList;
 }
 
-void printInformationsOfObjects(){
+void Minefield::printInformationsOfObjects(){
     for(int i = 0; i < 10; i++)
     {
         Object* pObject = ObjectManager::GetSingleton().GetObject(i);
@@ -214,7 +172,7 @@ void printInformationsOfObjects(){
 
 }
 
-void addObjectsToSystem(){
+void Minefield::addObjectsToSystem(){
     // Let's add lots of mine objects to the system before starting things up
     for(int i = 0; i < g_numberOfTeams; i++)
     {
@@ -230,7 +188,7 @@ void addObjectsToSystem(){
     }
 }
 
-void initialization(int aArgc, char* aArgv[], int& numberOfWorkerThreads, int& randomSeed){
+void Minefield::initialization(int aArgc, char* aArgv[], int& numberOfWorkerThreads, int& randomSeed){
     if(aArgc > 1)
     {
         randomSeed = atoi(aArgv[1]);
@@ -255,7 +213,7 @@ void initialization(int aArgc, char* aArgv[], int& numberOfWorkerThreads, int& r
     printf("Number of mines per team: %d\n", g_numberOfMinesPerTeam);
 }
 
-int main(int aArgc, char* aArgv[])
+int Minefield::simulation(int aArgc, char* aArgv[])
 {
     int numberOfWorkerThreads = 16;
     int randomSeed = 0;
@@ -277,3 +235,4 @@ int main(int aArgc, char* aArgv[])
 // addObjectsToSystem function created
 // initialization function which takes the command line arguments and do init few things
 // removed brackets from main body, that was unnecessary
+//separated WorkerThread to a separate file

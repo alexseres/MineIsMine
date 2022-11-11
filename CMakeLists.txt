@@ -3,7 +3,9 @@ project(Mine)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(Mine Minefield.cpp
+add_executable(Mine main.cpp
+                Minefield.cpp
+                Minefield.h
                 Mine.cpp
                 ObjectManager.cpp
                 Object.cpp
@@ -16,4 +18,9 @@ add_executable(Mine Minefield.cpp
                 ObjectManager.h
                 Random.h
                 stdafx.h
-                targetver.h)
+                targetver.h
+                QueryPerformanceTimer.cpp
+                QueryPerformanceTimer.h
+                ScopedQueryPerformanceTimer.cpp
+                ScopedQueryPerformanceTimer.h
+                WorkerThread.h)
