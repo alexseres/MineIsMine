@@ -1,10 +1,10 @@
 #include "stdafx.h"
 
-#ifdef __linux
-#include <math.h>
-#endif
+//#ifdef __linux
+//#include <math.h>
+//#endif
 #include "Mine.h"
-
+#include <math.h>
 #include "ObjectManager.h"
 
 Mine::Mine()

@@ -108,6 +108,39 @@
 #include <stdio.h>
 
 
+class QueryPerformanceTimer
+{
+public:
+    QueryPerformanceTimer()
+    {
+
+    }
+
+    void Start()
+    {
+	struct timespec now;
+	clock_gettime(CLOCK_MONOTONIC, &now);
+	m_start = now.tv_sec + now.tv_nsec/1000000000.0;
+    }
+
+    double Get()
+    {
+	struct timespec now;
+	clock_gettime(CLOCK_MONOTONIC, &now);
+	m_stop = now.tv_sec + now.tv_nsec/1000000000.0;
+
+        double time = m_stop - m_start;
+
+        m_start = m_stop;
+
+        // time value is in micro seconds
+        return time;
+    }
+
+    double m_start;
+    double m_stop;
+};
+
 
 
 int g_numberOfTeams = 3;
