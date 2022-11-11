@@ -2,11 +2,11 @@
 
 #include "Object.h"
 #include "Random.h"
-
 #include <vector>
 
 class Mine : public Object
 {
+// put m_... fields into private
 public:
     Mine();
     ~Mine();
