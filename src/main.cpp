@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Minefield.h"
+#include "Managers/Minefield.h"
 
 int main(int aArgc, char* aArgv[]) {
     Minefield minefield;

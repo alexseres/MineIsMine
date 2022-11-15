@@ -1,13 +1,8 @@
-#include "stdafx.h"
-
-//#ifdef __linux
-//#include <stdio.h>
-//#endif
-
 #include <stdio.h>
+#include "../Utils/stdafx.h"
 #include "ObjectManager.h"
-#include "Object.h"
-#include "Mine.h"
+#include "../Models/Object.h"
+#include "../Models/Mine.h"
 
 ObjectManager::ObjectManager()
     : m_numberOfObjects(0)
@@ -30,7 +25,6 @@ ObjectManager& ObjectManager::GetSingleton()
 void ObjectManager::AddMineObject(unsigned int aObjectId, float aPosition[3], int aTeam)
 {
     MutexLock lock(m_lock);
-
     for(unsigned int i = 0; i < m_numberOfObjects; i++)
     {
         if(m_objects[i]->m_objectId == aObjectId)

@@ -1,0 +1,5 @@
+add_executable(Mine main.cpp)
+add_subdirectory(Utils)
+add_subdirectory(Managers)
+add_subdirectory(Models)
+target_link_libraries(Mine PUBLIC util manager model)

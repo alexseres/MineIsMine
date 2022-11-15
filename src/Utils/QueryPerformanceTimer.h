@@ -14,7 +14,6 @@ private:
     double m_start;
     double m_stop;
 public:
-    QueryPerformanceTimer();
     void Start();
     double Get();
 };

@@ -2,25 +2,25 @@
 #define MINE_SCOPEDQUERYPERFORMANCETIMER_H
 #include "QueryPerformanceTimer.h"
 #include <stdio.h>
+#include <iostream>
 
 
 class ScopedQueryPerformanceTimer {
-public:
+private:
+    const char*	m_msg;
     QueryPerformanceTimer m_timer;
-    ScopedQueryPerformanceTimer(const char*	aMsg = NULL)
+
+public:
+    void start()
     {
-        m_msg = aMsg;
+        m_msg = "Time taken in milliseconds:";
         m_timer.Start();
     }
-
-    ~ScopedQueryPerformanceTimer()
+    void finish()
     {
         double timeUsed = m_timer.Get();
         printf("%s %f\n", m_msg, timeUsed / 1000.0);
     }
-
-
-    const char*	m_msg;
 };
 
 

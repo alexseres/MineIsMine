@@ -1,5 +1,4 @@
-#include "stdafx.h"
-
+#include "../Utils/stdafx.h"
 #include "Object.h"
 
 

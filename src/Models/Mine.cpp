@@ -1,11 +1,11 @@
-#include "stdafx.h"
+#include "../Utils/stdafx.h"
 
 //#ifdef __linux
 //#include <math.h>
 //#endif
 #include "Mine.h"
 #include <math.h>
-#include "ObjectManager.h"
+#include "../Managers/ObjectManager.h"
 
 Mine::Mine()
 {
@@ -76,7 +76,6 @@ int Mine::GetNumberOfEnemyTargets()
             numberOfEnemyTargets++;
         }
     }
-
     return numberOfEnemyTargets;
 }
 
@@ -85,7 +84,6 @@ void Mine::Explode()
     for(unsigned int i = 0; i < m_targetList.size(); ++i)
     {
         float distance = GetDistance(GetPosition(), m_targetList[i]->GetPosition());
-
         // damage is inverse-squared of distance
         float factor = 1.0f - (distance / m_destructiveRadius);
         float damage = (factor * factor) * m_explosiveYield;

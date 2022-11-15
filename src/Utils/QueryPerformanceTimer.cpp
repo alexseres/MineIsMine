@@ -16,3 +16,4 @@ double QueryPerformanceTimer::Get() {
     // time value is in micro seconds
     return time;
 }
+

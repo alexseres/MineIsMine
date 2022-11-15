@@ -6,6 +6,8 @@
 class Mutex
 {
 public:
+    volatile long m_spinLock;
+
     enum LockState
     {
         LS_LOCK_IS_FREE = 0,
@@ -23,7 +25,9 @@ public:
 
     void Lock()
     {
-        while(__sync_val_compare_and_swap(&m_spinLock, LS_LOCK_IS_TAKEN, LS_LOCK_IS_FREE));
+        // swapped from __sync_val_compare_and_swap to __sync_bool_compare_and_swap because of effeciently
+        while(__sync_bool_compare_and_swap(&m_spinLock, LS_LOCK_IS_TAKEN, LS_LOCK_IS_FREE));
+
     }
 
     void Unlock()
@@ -31,7 +35,6 @@ public:
         __sync_lock_test_and_set(&m_spinLock, LS_LOCK_IS_FREE);
     }
 
-    volatile long m_spinLock;
 };
 
 class MutexLock

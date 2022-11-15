@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Object.h"
-#include "Random.h"
+#include "../Utils/Random.h"
 #include <vector>
 
 class Mine : public Object
