@@ -7,7 +7,6 @@
 #include "../Models/Object.h"
 #include "../Models/Mine.h"
 #include "../Utils/ScopedQueryPerformanceTimer.h"
-#include "Minefield.h"
 #include "../Utils/QueryPerformanceTimer.h"
 #include <time.h>
 #include <unistd.h>
@@ -26,11 +25,15 @@ private:
     ScopedQueryPerformanceTimer timer;
     ObjectManager objectManager;
 
+
 public:
-    static int s_numberOfWorkerThreadsActive;
-    static int s_numberOfWorkerThreadsStarted;
+//    static int s_numberOfWorkerThreadsActive;
+//    static int s_numberOfWorkerThreadsStarted;
+    int s_numberOfWorkerThreadsActive;
+    int s_numberOfWorkerThreadsStarted;
     static Mutex s_lock;
     static void FindTargets(void* aIgnored);
+    void Find_Targets();
     void FindTargetsForAllMines(WorkerThread& wTread);
     void announceWinner();
     void workerThreadPopulating(int numberOfWorkerThreads);

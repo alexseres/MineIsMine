@@ -25,6 +25,7 @@ ObjectManager& ObjectManager::GetSingleton()
 void ObjectManager::AddMineObject(unsigned int aObjectId, float aPosition[3], int aTeam)
 {
     MutexLock lock(m_lock);
+    timer.start();
     for(unsigned int i = 0; i < m_numberOfObjects; i++)
     {
         if(m_objects[i]->m_objectId == aObjectId)
@@ -32,7 +33,7 @@ void ObjectManager::AddMineObject(unsigned int aObjectId, float aPosition[3], in
             // If objectId matches an existing entry then just consider it as getting updated (even potentially switched to a new team)
             Mine* pMineObject = new Mine();
             pMineObject->m_objectId = m_objects[i]->m_objectId;
-            pMineObject->m_team = m_objects[i]->m_team;
+            pMineObject->m_team = aTeam;
             pMineObject->m_bitFlags = m_objects[i]->m_bitFlags;
             for(int j = 0; j < 3; j++)
                 pMineObject->m_position[j] = aPosition[j];
@@ -44,6 +45,7 @@ void ObjectManager::AddMineObject(unsigned int aObjectId, float aPosition[3], in
             return;
         }
     }
+    timer.finish();
 
 	if(m_numberOfObjects == cMaximumNumberOfObjects)
 		return; 

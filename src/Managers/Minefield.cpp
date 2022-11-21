@@ -21,27 +21,61 @@
 //
 // 
 //
+#include <thread>
 #include "Minefield.h"
 
 
-int Minefield::s_numberOfWorkerThreadsStarted;
-int Minefield::s_numberOfWorkerThreadsActive;
+//int Minefield::s_numberOfWorkerThreadsStarted;
+//int Minefield::s_numberOfWorkerThreadsActive;
 Mutex Minefield::s_lock;
 
-void Minefield::FindTargets(void* aIgnored)
+
+//void Minefield::FindTargets(void* aIgnored)
+//{
+//
+//    {
+//        MutexLock lock(s_lock);
+//        s_numberOfWorkerThreadsActive++;
+//        s_numberOfWorkerThreadsStarted++;
+//    }
+//    bool done = false;
+//    int checker= 0;
+//    while(!done)
+//    {
+//        int index = ObjectManager::GetSingleton().GetNextFindTargetsIndex();
+//        if(index < ObjectManager::GetSingleton().GetNumberOfObjects())
+//        {
+//            Mine* pMineObject = static_cast<Mine*>(ObjectManager::GetSingleton().GetObject(index));
+//            pMineObject->FindCurrentTargets();
+//        }
+//        else
+//        {
+//            done = true;
+//        }
+//    }
+//    {
+//        MutexLock lock(s_lock);
+//        s_numberOfWorkerThreadsActive--;
+//    }
+//}
+
+void Minefield::Find_Targets()
 {
+
     {
-        MutexLock lock(s_lock);
+        //MutexLock lock(s_lock);
         s_numberOfWorkerThreadsActive++;
         s_numberOfWorkerThreadsStarted++;
     }
     bool done = false;
+    int checker= 0;
     while(!done)
     {
-        int index = ObjectManager::GetSingleton().GetNextFindTargetsIndex();
-        if(index < ObjectManager::GetSingleton().GetNumberOfObjects())
+        checker++;
+        int index = objectManager.GetNextFindTargetsIndex();
+        if(index < objectManager.GetNumberOfObjects())
         {
-            Mine* pMineObject = static_cast<Mine*>(ObjectManager::GetSingleton().GetObject(index));
+            Mine* pMineObject = static_cast<Mine*>(objectManager.GetObject(index));
             pMineObject->FindCurrentTargets();
         }
         else
@@ -50,16 +84,17 @@ void Minefield::FindTargets(void* aIgnored)
         }
     }
     {
-        MutexLock lock(s_lock);
+        //MutexLock lock(s_lock);
         s_numberOfWorkerThreadsActive--;
     }
 }
 
-
 void Minefield::FindTargetsForAllMines(WorkerThread& wTread)
 {
     wTread.init();
-    pthread_create(&wTread.threadId, &wTread.attributes, (void*(*)(void*))FindTargets, NULL);
+//    pthread_create(&wTread.threadId, &wTread.attributes, (void*(*)(void*))FindTargets, NULL);
+    std::thread t_object(&Minefield::Find_Targets, this);
+    t_object.join();
 }
 
 void Minefield::announceWinner(){
@@ -93,10 +128,12 @@ void Minefield::runner(int numberOfWorkerThreads){
             FindTargetsForAllMines(workerThreadList[i]);
         }
 
+        int checker = 0;
         do
         {
             // sleep until all worker threads have finished doing their thing
             usleep(1000);
+            checker++;
         } while(s_numberOfWorkerThreadsActive > 0 || s_numberOfWorkerThreadsStarted == 0);
 
         for(int i = 0; i < g_numberOfTeams; i++)
@@ -196,5 +233,8 @@ int Minefield::simulation(int aArgc, char* aArgv[])
     timer.finish();
     return 0;
 }
+
+
+
 
 

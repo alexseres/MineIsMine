@@ -4,8 +4,8 @@
 #pragma once
 
 #include "../Utils/Mutex.h"
-
-class Object;
+#include "../Utils/ScopedQueryPerformanceTimer.h"
+#include "../Models/Object.h"
 
 const int cMaximumNumberOfObjects = 1000000;
 
@@ -16,6 +16,7 @@ private:
     int m_numberOfObjects;
     Object* m_objects[cMaximumNumberOfObjects];
     int m_nextFindTargetIndex;
+    ScopedQueryPerformanceTimer timer;
 
 public:
     ObjectManager();
