@@ -21,27 +21,28 @@ void Minefield::FindCurrentTargets(Mine* mine)
         float distance = mine->GetDistance(mine->GetPosition(), pObject->GetPosition());
         if(distance > mine->m_destructiveRadius)
         {
-            break;
+            continue;
         }
         //TODO: Any other reasons to not add this object?
+        if(pObject->GetInvulnerable())
+            continue;
+
         mine->m_targetList.push_back(pObject);
         mine->targetNumber++;
     }
-    if(mine->targetNumber > 0)allMinesThatHasTargets.push_back(mine);
+    if(mine->targetNumber > 0)
+        allMinesThatHasTargets.push_back(mine);
 }
 
 void Minefield::Find_Targets()
 {
     MutexLock lock(s_lock);
     bool done = false;
-    int checker= 0;
     while(!done)
     {
-        checker++;
         int index = objectManager.GetNextFindTargetsIndex();
         if(index < objectManager.GetNumberOfObjects())
         {
-            checker++;
             Mine* pMineObject = static_cast<Mine*>(objectManager.GetObject(index));
             FindCurrentTargets(pMineObject);
         }
@@ -102,7 +103,7 @@ void Minefield::runner(int numberOfWorkerThreads){
             else{
                 continue;
             }
-            std::cout << "Turn " <<  numberOfTurns << ": Team " << i << " picks Mine with object id " << pMine->GetObjectId() << " with " << pMine->targetNumber << "targets) to explode" << std::endl;
+            std::cout << "Turn " <<  numberOfTurns << ": Team " << i << " picks Mine with object id " << pMine->GetObjectId() << " with " << pMine->targetNumber << " targets to explode" << std::endl;
 
             std::string text =  "Mine with object_id = ";
             text+= std::to_string(pMine->GetObjectId());

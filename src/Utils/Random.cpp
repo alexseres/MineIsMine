@@ -17,7 +17,6 @@ void SetRandomSeed(const unsigned int aSeed)
 unsigned int GetRandomUInt32()
 {
     return gen();
-    //return s_mersenneTwisterRand();
 }
 
 float GetRandomFloat32()

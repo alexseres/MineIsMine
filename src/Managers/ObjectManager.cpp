@@ -17,14 +17,6 @@ ObjectManager::~ObjectManager()
     }
 }
 
-//static ObjectManager* s_pObjectManager;
-//
-//ObjectManager& ObjectManager::GetSingleton()
-//{
-//    static ObjectManager* pSingetonInstance = new ObjectManager();
-//    return *pSingetonInstance;
-//}
-
 void ObjectManager::AddMineObject(unsigned int aObjectId, float aPosition[3], int aTeam)
 {
     MutexLock lock(m_lock);
@@ -54,7 +46,7 @@ void ObjectManager::AddMineObject(unsigned int aObjectId, float aPosition[3], in
     m_objects[m_numberOfObjects]->m_objectId = aObjectId;
     m_objects[m_numberOfObjects]->m_team = aTeam;
     m_objects[m_numberOfObjects]->SetPosition(aPosition);
-    static_cast<Mine*>(m_objects[m_numberOfObjects])->m_destructiveRadius = GetRandomFloat32_Range(100.0f, 500.0f);
+    static_cast<Mine*>(m_objects[m_numberOfObjects])->m_destructiveRadius = GetRandomFloat32_Range(0, 100.0f);
     GetRandomFloat32() < 0.2f ? m_objects[m_numberOfObjects]->m_bitFlags = Object::OBF_INVULNERABLE: m_objects[m_numberOfObjects]->m_bitFlags = Object::OBF_ACTIVE;
     m_objects[m_numberOfObjects]->SetActive(GetRandomFloat32() < 0.95f);
     m_objects[m_numberOfObjects]->SetInvulnerable(GetRandomFloat32() < 0.20f);
@@ -122,10 +114,12 @@ int ObjectManager::GetObjectWithMostEnemyTargets(int aTeam)
     {
         if(m_objects[i]->m_team == aTeam)
         {
-            if(static_cast<Mine *>(m_objects[currentObjectIndex])->targetNumber < static_cast<Mine *>(m_objects[i])->targetNumber)
-            {
+            if(!static_cast<Mine *>(m_objects[currentObjectIndex])->GetActive())
+                continue;
+
+            if(static_cast<Mine *>(m_objects[currentObjectIndex])->targetNumber <= static_cast<Mine *>(m_objects[i])->targetNumber)
                 currentObjectIndex = i;
-            }
+
         }
     }
     return currentObjectIndex;

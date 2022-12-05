@@ -18,8 +18,6 @@ Mine::Mine()
 
 Mine::~Mine()
 {
-    //Explode();
-//    delete m_position;
 }
 
 void Mine::SetPosition(float aPosition[3])
@@ -50,13 +48,16 @@ void Mine::Explode(ObjectManager& objectManager, std::string text)
         std::vector<std::string> texts;
         for(unsigned int i = 0; i < m_targetList.size(); ++i)
         {
-
             if(!m_targetList[i]->IsDestroyed){
+                auto mine = static_cast<Mine*>(m_targetList[i]);
+                if(mine->GetInvulnerable())
+                    continue;
                 float distance = GetDistance(GetPosition(), m_targetList[i]->GetPosition());
                 // damage is inverse-squared of distance
                 float factor = 1.0f - (distance / m_destructiveRadius);
                 float damage = (factor * factor) * m_explosiveYield;
-                auto mine = static_cast<Mine*>(m_targetList[i]);
+
+
                 mine->TakeDamage(damage);
                 if(mine->m_health <= 0){
                     std::string text;
@@ -65,6 +66,9 @@ void Mine::Explode(ObjectManager& objectManager, std::string text)
                     text += " exploded by reaction";
                     texts.push_back(text);
                     mine->Explode(objectManager, text);
+                }
+                else{
+                    std::cout<< "Mine with object_id = " << std::to_string(mine->GetObjectId()) << "damaged, but not destroyed, current health: " << std::to_string(mine->m_health) << std::endl;
                 }
             }
         }
