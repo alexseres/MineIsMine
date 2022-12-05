@@ -1,17 +1,23 @@
 #include "stdafx.h"
 
+#include <iostream>
 #include <random>
 
-static std::mt19937 s_mersenneTwisterRand(std::mt19937::default_seed);
+//static std::mt19937 s_mersenneTwisterRand(std::mt19937::default_seed);
+std::random_device rd;
+std::mt19937 gen(rd());
+//static std::mt19937 s_mersenneTwisterRand(nullptr_t);
 
 void SetRandomSeed(const unsigned int aSeed)
 {
-    s_mersenneTwisterRand.seed(static_cast<std::mt19937::result_type>(aSeed));
+//    s_mersenneTwisterRand.seed(static_cast<std::mt19937::result_type>(aSeed));
+
 }
 
 unsigned int GetRandomUInt32()
 {
-    return s_mersenneTwisterRand();
+    return gen();
+    //return s_mersenneTwisterRand();
 }
 
 float GetRandomFloat32()

@@ -1,10 +1,10 @@
 #pragma once
-
+#include <iostream>
 
 class Object
 {
 public:
-    Object() { }
+    Object() { IsDestroyed = false;}
 
     ~Object() {}
 
@@ -12,20 +12,20 @@ public:
 
     bool GetActive();
     void SetActive(bool aActive);
+    bool IsDestroyed;
 
     bool GetInvulnerable();
     void SetInvulnerable(bool aInvulnerable);
 
     virtual float* GetPosition() { return 0; }
-    virtual void SetPosition(float*) {}
-
+    virtual void SetPosition(float pos[3]) {}
     unsigned int m_objectId;
     int m_team;
 
     enum ObjectBitFlags
     {
-        OBF_ACTIVE = 0x0000,
-        OBF_INVULNERABLE = 0x0002,
+        OBF_ACTIVE = 0x0001,
+        OBF_INVULNERABLE = 0x0003,
     };
 
     int m_bitFlags;

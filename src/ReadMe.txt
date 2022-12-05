@@ -40,7 +40,7 @@ in Minefield.cpp.
 Try to stick to the code convention that you find in the existing code.  Feel free to fix
 any inconsistencies.
 
-Getting the exact results provided below is not a requirement to ‘pass’ the test. We are far more interested
+Getting the exact results provided below is not a requirement to ï¿½passï¿½ the test. We are far more interested
 in code fixes, cleanup, style, improvements, issues uncovered, performance considerations, etc.
 
 In a moment you'll see why getting the same as the results listed below is not even going to be possible after a 

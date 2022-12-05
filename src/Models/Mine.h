@@ -1,8 +1,12 @@
 #pragma once
 
+#include <iostream>
+#include <list>
 #include "Object.h"
 #include "../Utils/Random.h"
 #include <vector>
+#include "../Managers/ObjectManager.h"
+
 
 class Mine : public Object
 {
@@ -12,16 +16,17 @@ public:
     ~Mine();
 
     float* GetPosition() { return m_position; }
-    void SetPosition(float* aPosition);
+    void SetPosition(float aPosition[3]);
 
     float GetDistance(float aPositionA[3], float aPositionB[3]);
-    void FindCurrentTargets();
+//    void FindCurrentTargets();
     int GetNumberOfEnemyTargets();
     int GetTeam() { return m_team; }
-    void Explode();
+    void Explode(ObjectManager& objectManager, std::string text);
+    int targetNumber = 0;
     void TakeDamage(float aDamage);
 
-    float* m_position;
+    float m_position[3];
     float m_destructiveRadius;
     float m_health;
     float m_explosiveYield;

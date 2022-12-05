@@ -12,20 +12,23 @@ ObjectManager::ObjectManager()
 
 ObjectManager::~ObjectManager()
 {
+    for(int i = 0;i < starterNumberOfObjects;i++){
+        delete m_objects[i];
+    }
 }
 
-static ObjectManager* s_pObjectManager;
-
-ObjectManager& ObjectManager::GetSingleton()
-{
-    static ObjectManager* pSingetonInstance = new ObjectManager(); 
-    return *pSingetonInstance; 
-}
+//static ObjectManager* s_pObjectManager;
+//
+//ObjectManager& ObjectManager::GetSingleton()
+//{
+//    static ObjectManager* pSingetonInstance = new ObjectManager();
+//    return *pSingetonInstance;
+//}
 
 void ObjectManager::AddMineObject(unsigned int aObjectId, float aPosition[3], int aTeam)
 {
     MutexLock lock(m_lock);
-    timer.start();
+    //timer.start();
     for(unsigned int i = 0; i < m_numberOfObjects; i++)
     {
         if(m_objects[i]->m_objectId == aObjectId)
@@ -34,40 +37,33 @@ void ObjectManager::AddMineObject(unsigned int aObjectId, float aPosition[3], in
             Mine* pMineObject = new Mine();
             pMineObject->m_objectId = m_objects[i]->m_objectId;
             pMineObject->m_team = aTeam;
+            pMineObject->SetPosition(aPosition);
             pMineObject->m_bitFlags = m_objects[i]->m_bitFlags;
-            for(int j = 0; j < 3; j++)
-                pMineObject->m_position[j] = aPosition[j];
+            pMineObject->SetActive(m_objects[i]->GetActive());
+            pMineObject->SetInvulnerable(m_objects[i]->GetInvulnerable());
             pMineObject->m_destructiveRadius = static_cast<Mine*>(m_objects[i])->m_destructiveRadius;
 
             delete m_objects[i];
             m_objects[i] = pMineObject;
-
             return;
         }
     }
-    timer.finish();
-
-	if(m_numberOfObjects == cMaximumNumberOfObjects)
-		return; 
+    //timer.finish();
     
 	m_objects[m_numberOfObjects] = new Mine();
     m_objects[m_numberOfObjects]->m_objectId = aObjectId;
     m_objects[m_numberOfObjects]->m_team = aTeam;
     m_objects[m_numberOfObjects]->SetPosition(aPosition);
-    static_cast<Mine*>(m_objects[m_numberOfObjects])->m_destructiveRadius = GetRandomFloat32_Range(10.0f, 100.0f);
-    
-    bool active = (GetRandomFloat32() < 0.95f);
-    m_objects[m_numberOfObjects]->SetActive(active);
-
-    if(GetRandomFloat32() < 0.1f)
-    {
-        m_objects[m_numberOfObjects]->m_bitFlags == Object::OBF_INVULNERABLE;
-    }
+    static_cast<Mine*>(m_objects[m_numberOfObjects])->m_destructiveRadius = GetRandomFloat32_Range(100.0f, 500.0f);
+    GetRandomFloat32() < 0.2f ? m_objects[m_numberOfObjects]->m_bitFlags = Object::OBF_INVULNERABLE: m_objects[m_numberOfObjects]->m_bitFlags = Object::OBF_ACTIVE;
+    m_objects[m_numberOfObjects]->SetActive(GetRandomFloat32() < 0.95f);
+    m_objects[m_numberOfObjects]->SetInvulnerable(GetRandomFloat32() < 0.20f);
 
     m_numberOfObjects++;
-
     return;
 }
+
+
 
 void ObjectManager::RemoveObject(unsigned int aObjectId)
 {
@@ -75,19 +71,16 @@ void ObjectManager::RemoveObject(unsigned int aObjectId)
     {
         if(m_objects[i]->m_objectId == aObjectId)
         {
-            delete m_objects[i];
-
+            //delete m_objects[i];
             // Do a fast remove and replace this location with object currently at end
             m_objects[i] = m_objects[m_numberOfObjects - 1];
             m_objects[m_numberOfObjects - 1] = NULL;
+            m_numberOfObjects--;
         }
     }
-
-    if(m_numberOfObjects % 100 == 0)
-        printf("Number of objects in system %u\n", m_numberOfObjects);
-
-    return;
 }
+
+
 
 Object* ObjectManager::GetObjectByObjectId(int aObjectId)
 {
@@ -111,39 +104,31 @@ bool ObjectManager::IsValidObject(Object* apObject)
             return true;
         }
     }
-
     return false;
 }
 
 int ObjectManager::GetNextFindTargetsIndex()
 {
     MutexLock lock(m_lock);
-
     int index = m_nextFindTargetIndex;
     m_nextFindTargetIndex++;
-
     return index;
 }
 
-Object* ObjectManager::GetObjectWithMostEnemyTargets(int aTeam)
+int ObjectManager::GetObjectWithMostEnemyTargets(int aTeam)
 {
-    Object* pBestObject = NULL;
+    int currentObjectIndex = 0;
     for(unsigned int i = 0; i < m_numberOfObjects; i++)
     {
         if(m_objects[i]->m_team == aTeam)
         {
-            if(pBestObject == NULL)
+            if(static_cast<Mine *>(m_objects[currentObjectIndex])->targetNumber < static_cast<Mine *>(m_objects[i])->targetNumber)
             {
-                pBestObject = m_objects[i];
-            }
-            else if(static_cast<Mine*>(m_objects[i])->GetNumberOfEnemyTargets() > static_cast<Mine*>(pBestObject)->GetNumberOfEnemyTargets())
-            {
-                pBestObject = m_objects[i];
+                currentObjectIndex = i;
             }
         }
     }
-
-    return pBestObject;
+    return currentObjectIndex;
 }
 
 int ObjectManager::GetNumberOfObjectForTeam(int aTeam)

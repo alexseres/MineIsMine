@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <stdio.h>
-
+#include <mutex>
 
 
 class Minefield {
@@ -33,6 +33,7 @@ public:
     int s_numberOfWorkerThreadsStarted;
     static Mutex s_lock;
     static void FindTargets(void* aIgnored);
+    void FindCurrentTargets(Mine* mine);
     void Find_Targets();
     void FindTargetsForAllMines(WorkerThread& wTread);
     void announceWinner();
@@ -42,6 +43,8 @@ public:
     void initialization(int aArgc, char* aArgv[], int& numberOfWorkerThreads, int& randomSeed);
     void runner(int numberOfWorkerThreads);
     int simulation(int aArgc, char* aArgv[]);
+
+    void printNumberOfMinesPerTeam();
 };
 
 

@@ -1,72 +1,38 @@
-//
-// ZOS Software Engineer Applicant Test 2.3.0
-//
-// Submitted by: Seres Alex
-//
-// Date: 2022.11.11.
-//
-// Time taken: 12 hours
-//
-// Notes:
-// from the main body, trying to create logic groups
-// announceWinner function created to prints which teams won
-// runner function simulates the game, there can be mines exploded
-// workerThreadPopulating function which populates workerthreads
-// addObjectsToSystem function created
-// initialization function which takes the command line arguments and do init few things
-// removed brackets from main body, that was unnecessary
-// separated WorkerThread to a separate file
-//
-//
-//
-// 
-//
 #include <thread>
 #include "Minefield.h"
 
 
-//int Minefield::s_numberOfWorkerThreadsStarted;
-//int Minefield::s_numberOfWorkerThreadsActive;
 Mutex Minefield::s_lock;
+std::vector<Mine *> allMinesThatHasTargets;
 
+void Minefield::FindCurrentTargets(Mine* mine)
+{
+    if(!mine->GetActive())
+    {
+        return;
+    }
 
-//void Minefield::FindTargets(void* aIgnored)
-//{
-//
-//    {
-//        MutexLock lock(s_lock);
-//        s_numberOfWorkerThreadsActive++;
-//        s_numberOfWorkerThreadsStarted++;
-//    }
-//    bool done = false;
-//    int checker= 0;
-//    while(!done)
-//    {
-//        int index = ObjectManager::GetSingleton().GetNextFindTargetsIndex();
-//        if(index < ObjectManager::GetSingleton().GetNumberOfObjects())
-//        {
-//            Mine* pMineObject = static_cast<Mine*>(ObjectManager::GetSingleton().GetObject(index));
-//            pMineObject->FindCurrentTargets();
-//        }
-//        else
-//        {
-//            done = true;
-//        }
-//    }
-//    {
-//        MutexLock lock(s_lock);
-//        s_numberOfWorkerThreadsActive--;
-//    }
-//}
+    mine->m_targetList.clear();
+
+    for(int i = 0; i < objectManager.GetNumberOfObjects(); ++i)
+    {
+        Object* pObject = objectManager.GetObject(i);
+        if(pObject->GetObjectId() == mine->GetObjectId()) continue;
+        float distance = mine->GetDistance(mine->GetPosition(), pObject->GetPosition());
+        if(distance > mine->m_destructiveRadius)
+        {
+            break;
+        }
+        //TODO: Any other reasons to not add this object?
+        mine->m_targetList.push_back(pObject);
+        mine->targetNumber++;
+    }
+    if(mine->targetNumber > 0)allMinesThatHasTargets.push_back(mine);
+}
 
 void Minefield::Find_Targets()
 {
-
-    {
-        //MutexLock lock(s_lock);
-        s_numberOfWorkerThreadsActive++;
-        s_numberOfWorkerThreadsStarted++;
-    }
+    MutexLock lock(s_lock);
     bool done = false;
     int checker= 0;
     while(!done)
@@ -75,24 +41,20 @@ void Minefield::Find_Targets()
         int index = objectManager.GetNextFindTargetsIndex();
         if(index < objectManager.GetNumberOfObjects())
         {
+            checker++;
             Mine* pMineObject = static_cast<Mine*>(objectManager.GetObject(index));
-            pMineObject->FindCurrentTargets();
+            FindCurrentTargets(pMineObject);
         }
         else
         {
             done = true;
         }
     }
-    {
-        //MutexLock lock(s_lock);
-        s_numberOfWorkerThreadsActive--;
-    }
 }
 
 void Minefield::FindTargetsForAllMines(WorkerThread& wTread)
 {
     wTread.init();
-//    pthread_create(&wTread.threadId, &wTread.attributes, (void*(*)(void*))FindTargets, NULL);
     std::thread t_object(&Minefield::Find_Targets, this);
     t_object.join();
 }
@@ -102,7 +64,7 @@ void Minefield::announceWinner(){
     int winningObjectCount = 0;
     for(int i = 0; i < g_numberOfTeams; i++)
     {
-        printf("Team %d has %d mines remaining\n", i, objectManager.GetNumberOfObjectForTeam(i));
+        std::cout << "Team " << i << " has " << objectManager.GetNumberOfObjectForTeam(i) << " mines remaining" <<std::endl;
 
         if(objectManager.GetNumberOfObjectForTeam(i) > winningObjectCount)
         {
@@ -111,7 +73,8 @@ void Minefield::announceWinner(){
         }
     }
 
-    printf("Team %d WINS after %d turns!!\n", winningTeam, numberOfTurns);
+    std::cout << "Team " << winningTeam << " WINS after " <<  numberOfTurns << " turns" <<std::endl;
+    std::cout << "Number of objects destroyed: " << objectManager.GetNumberofObjectsDestroyed() << std::endl;
 }
 
 void Minefield::runner(int numberOfWorkerThreads){
@@ -121,35 +84,34 @@ void Minefield::runner(int numberOfWorkerThreads){
         numberOfTurns++;
         targetsStillFound = false;
         objectManager.ResetNextFindTargetIndex();
-        s_numberOfWorkerThreadsStarted = 0;
+
 
         for(int i = 0; i < numberOfWorkerThreads; i++)
         {
             FindTargetsForAllMines(workerThreadList[i]);
         }
 
-        int checker = 0;
-        do
-        {
-            // sleep until all worker threads have finished doing their thing
-            usleep(1000);
-            checker++;
-        } while(s_numberOfWorkerThreadsActive > 0 || s_numberOfWorkerThreadsStarted == 0);
-
         for(int i = 0; i < g_numberOfTeams; i++)
         {
-            Mine* pMine = static_cast<Mine*>(objectManager.GetObjectWithMostEnemyTargets(i));
-            if(pMine->GetNumberOfEnemyTargets() > 0)
+            int idWithMostEnemyTargets = objectManager.GetObjectWithMostEnemyTargets(i);
+            Mine* pMine = static_cast<Mine *>(objectManager.GetObject(idWithMostEnemyTargets));
+            if(pMine->targetNumber > 0)
             {
                 targetsStillFound = true;
             }
-            if(numberOfTurns < 5)
-            {
-                printf("Turn %d: Team %d picks Mine with object id %d (with %d targets) to explode\n", numberOfTurns, i,
-                       pMine->GetObjectId(), pMine->GetNumberOfEnemyTargets());
+            else{
+                continue;
             }
-            pMine->Explode();
+            std::cout << "Turn " <<  numberOfTurns << ": Team " << i << " picks Mine with object id " << pMine->GetObjectId() << " with " << pMine->targetNumber << "targets) to explode" << std::endl;
+
+            std::string text =  "Mine with object_id = ";
+            text+= std::to_string(pMine->GetObjectId());
+            text += " exploded by having picked up with most target";
+            pMine->Explode(objectManager, text);
         }
+
+        if(targetsStillFound) printNumberOfMinesPerTeam();
+        std::cout << "Number of objects in system: " << objectManager.Get_m_numberOfobjects() <<std::endl;
     }
 }
 
@@ -162,7 +124,8 @@ void Minefield::workerThreadPopulating(int numberOfWorkerThreads){
 }
 
 void Minefield::printInformationsOfObjects(){
-    for(int i = 0; i < 10; i++)
+    objectManager.SetStarterNumberOfObjects();
+    for(int i = 0; i < objectManager.GetNumberOfObjects(); i++)
     {
         Object* pObject = objectManager.GetObject(i);
         if(pObject)
@@ -173,7 +136,14 @@ void Minefield::printInformationsOfObjects(){
         }
     }
     printf("Number of objects in system %u\n", objectManager.GetNumberOfObjects());
+    printNumberOfMinesPerTeam();
+}
 
+void Minefield::printNumberOfMinesPerTeam(){
+    for(int i = 0;i < g_numberOfTeams;i++){
+        int mines = objectManager.GetNumberOfObjectForTeam(i);
+        std::cout << "Number of mines: " << mines << " for team " << i << std::endl;
+    }
 }
 
 void Minefield::addObjectsToSystem(){
@@ -185,7 +155,6 @@ void Minefield::addObjectsToSystem(){
             float position[3];
             for(int i = 0; i < 3; i++)
                 position[i] = GetRandomFloat32_Range(-1000.0f, 1000.0f);
-                //std::cout << "POSITION: " << position[i] << std::endl;
 
             unsigned int objectId = GetRandomUInt32() % (g_numberOfMinesPerTeam * 10);
             objectManager.AddMineObject(objectId, position, i);

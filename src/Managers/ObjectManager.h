@@ -2,7 +2,7 @@
 #define OBJECTMANAGER_H
 
 #pragma once
-
+#include <iostream>
 #include "../Utils/Mutex.h"
 #include "../Utils/ScopedQueryPerformanceTimer.h"
 #include "../Models/Object.h"
@@ -12,6 +12,7 @@ const int cMaximumNumberOfObjects = 1000000;
 class ObjectManager
 {
 private:
+    int starterNumberOfObjects;
     Mutex m_lock;
     int m_numberOfObjects;
     Object* m_objects[cMaximumNumberOfObjects];
@@ -21,8 +22,10 @@ private:
 public:
     ObjectManager();
     ~ObjectManager();
+    void SetStarterNumberOfObjects(){starterNumberOfObjects = m_numberOfObjects;}
     static ObjectManager& GetSingleton();
     int GetNumberOfObjects() { return m_numberOfObjects; }
+    int Get_m_numberOfobjects(){return m_numberOfObjects;}
     Object* GetObject(int aIndex) { return m_objects[aIndex]; }
     Object* GetObjectByObjectId(int aObjectId);
     bool IsValidObject(Object* apObject);
@@ -31,8 +34,9 @@ public:
     int GetNextFindTargetsIndex();
     void ResetNextFindTargetIndex() { m_nextFindTargetIndex = 0; }
 
-    Object* GetObjectWithMostEnemyTargets(int aTeam);
+    int GetObjectWithMostEnemyTargets(int aTeam);
     int GetNumberOfObjectForTeam(int aTeam);
+    int GetNumberofObjectsDestroyed(){return starterNumberOfObjects - m_numberOfObjects;}
 
 };
 // - replaced private members to be up, and public to be down
