@@ -21,7 +21,8 @@ unsigned int GetRandomUInt32()
 
 float GetRandomFloat32()
 {
-    return static_cast<float>(GetRandomUInt32()) / static_cast<float>(0xFFFFFFFF);
+    auto f = static_cast<float>(GetRandomUInt32()) / static_cast<float>(0xFFFFFFFF);
+    return f;
 }
 
 float GetRandomFloat32_Range(float aMin, float aMax)

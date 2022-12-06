@@ -24,8 +24,8 @@ public:
 
     enum ObjectBitFlags
     {
-        OBF_ACTIVE = 0x0001,
-        OBF_INVULNERABLE = 0x0003,
+        OBF_ACTIVE = 0x0003,
+        OBF_INVULNERABLE = 0x0001,
     };
 
     int m_bitFlags;

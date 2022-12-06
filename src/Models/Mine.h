@@ -14,6 +14,7 @@ class Mine : public Object
 public:
     Mine();
     ~Mine();
+    ScopedQueryPerformanceTimer timer;
 
     float* GetPosition() { return m_position; }
     void SetPosition(float aPosition[3]);

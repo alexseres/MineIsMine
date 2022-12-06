@@ -49,7 +49,7 @@ void ObjectManager::AddMineObject(unsigned int aObjectId, float aPosition[3], in
     static_cast<Mine*>(m_objects[m_numberOfObjects])->m_destructiveRadius = GetRandomFloat32_Range(0, 100.0f);
     GetRandomFloat32() < 0.2f ? m_objects[m_numberOfObjects]->m_bitFlags = Object::OBF_INVULNERABLE: m_objects[m_numberOfObjects]->m_bitFlags = Object::OBF_ACTIVE;
     m_objects[m_numberOfObjects]->SetActive(GetRandomFloat32() < 0.95f);
-    m_objects[m_numberOfObjects]->SetInvulnerable(GetRandomFloat32() < 0.20f);
+    m_objects[m_numberOfObjects]->SetInvulnerable(GetRandomFloat32() > 0.80f);
 
     m_numberOfObjects++;
     return;
@@ -59,6 +59,7 @@ void ObjectManager::AddMineObject(unsigned int aObjectId, float aPosition[3], in
 
 void ObjectManager::RemoveObject(unsigned int aObjectId)
 {
+
     for(unsigned int i = 0; i < m_numberOfObjects; i++)
     {
         if(m_objects[i]->m_objectId == aObjectId)
