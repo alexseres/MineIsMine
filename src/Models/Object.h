@@ -5,7 +5,6 @@ class Object
 {
 public:
     Object() { IsDestroyed = false;}
-
     ~Object() {}
 
     int GetObjectId() { return m_objectId; }

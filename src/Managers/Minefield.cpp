@@ -12,6 +12,7 @@ void Minefield::FindCurrentTargets(Mine* mine)
         return;
     }
 
+
     mine->m_targetList.clear();
 
     for(int i = 0; i < objectManager.GetNumberOfObjects(); ++i)
@@ -86,10 +87,10 @@ void Minefield::runner(int numberOfWorkerThreads){
         targetsStillFound = false;
         objectManager.ResetNextFindTargetIndex();
 
-
         for(int i = 0; i < numberOfWorkerThreads; i++)
         {
             FindTargetsForAllMines(workerThreadList[i]);
+
         }
 
         for(int i = 0; i < g_numberOfTeams; i++)
@@ -157,7 +158,7 @@ void Minefield::addObjectsToSystem(){
             for(int i = 0; i < 3; i++)
                 position[i] = GetRandomFloat32_Range(-1000.0f, 1000.0f);
 
-            unsigned int objectId = GetRandomUInt32() % (g_numberOfMinesPerTeam * 10);
+            unsigned int objectId = GetRandomUInt32() % (g_numberOfMinesPerTeam * 10000);
             objectManager.AddMineObject(objectId, position, i);
         }
     }
@@ -203,8 +204,4 @@ int Minefield::simulation(int aArgc, char* aArgv[])
     timer.finish();
     return 0;
 }
-
-
-
-
 
