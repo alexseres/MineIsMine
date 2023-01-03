@@ -17,6 +17,7 @@ ObjectManager::~ObjectManager()
     }
 }
 
+
 void ObjectManager::AddMineObject(unsigned int aObjectId, float aPosition[3], int aTeam)
 {
     MutexLock lock(m_lock);

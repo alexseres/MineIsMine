@@ -33,4 +33,6 @@ public:
     float m_explosiveYield;
 
     std::vector<Object*> m_targetList;
+
+    bool MisFired();
 };

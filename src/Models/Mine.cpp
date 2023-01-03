@@ -39,12 +39,39 @@ float Mine::GetDistance(float aPositionA[3], float aPositionB[3])
 }
 
 
+// There is a 10% chance that when a mine explodes it will misfire and its destructive radius is cut by 50%. There
+// is an additional 5% chance that it will do the opposite and its destructive radius is now 150% the original value.
+bool Mine::MisFired()
+{
+    if(targetNumber == 0) return false;
+    bool misFiredWhichReduceRadius = GetRandomUInt32() < 0.10f;
+    bool misFireWhhichIncreaseRadius = GetRandomUInt32() < 0.05f;
+    if(!misFiredWhichReduceRadius && !misFireWhhichIncreaseRadius)
+        return false;
+
+    misFireWhhichIncreaseRadius ? m_destructiveRadius = m_destructiveRadius * 1.5 : m_destructiveRadius = m_destructiveRadius *  0.5;
+    std::vector<Object *> new_targetList;
+
+    for(unsigned int i = 0; i < m_targetList.size(); ++i)
+    {
+        float distance = GetDistance(GetPosition(), m_targetList[i]->GetPosition());
+        if(distance > m_destructiveRadius)
+        {
+            new_targetList.push_back(m_targetList[i]);
+        }
+        m_targetList = std::move(new_targetList);
+    }
+    return true;
+}
+
 void Mine::Explode(ObjectManager& objectManager, std::string text)
 {
     m_health = 0;
     IsDestroyed = true;
 
-    if(targetNumber > 0){
+    bool misFired = MisFired();
+    if(targetNumber > 0)
+    {
 
         for(unsigned int i = 0; i < m_targetList.size(); ++i)
         {
@@ -53,6 +80,7 @@ void Mine::Explode(ObjectManager& objectManager, std::string text)
 
                 if(mine->GetInvulnerable())
                     continue;
+
 
                 float distance = GetDistance(GetPosition(), m_targetList[i]->GetPosition());
                 // damage is inverse-squared of distance

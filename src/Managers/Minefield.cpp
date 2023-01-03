@@ -24,7 +24,9 @@ void Minefield::FindCurrentTargets(Mine* mine)
         {
             continue;
         }
+
         //TODO: Any other reasons to not add this object?
+
         if(pObject->GetInvulnerable())
             continue;
 
