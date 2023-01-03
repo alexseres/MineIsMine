@@ -1,8 +1,3 @@
-========================================================================
-    CONSOLE APPLICATION : Minefield Project Overview
-
-	ZOS Software Engineer Applicant Test
-========================================================================
 
 This application consists of a large number of mine objects that have a unique identifier, a position,
 a team and can be marked as active or invulnerable.
@@ -29,39 +24,6 @@ Tips:
 -chain reactions are possible (i.e. a fatally damaged mine will explode and damage its targets)
 -friendly fire is on (an exploding mine will damage both enemy and friendly targets within its destructive radius)
 
-Please comment changes and alterations to the code. Feel free to document your work and progress in the comment
-notes section at the top of Minefield.cpp. In general, the more insight you provide into your work the better.
-If you try alternative approaches, even if they don't work out the way you hope, be sure to document the decision making
-you made along the way.
-
-Make sure that your name, the date you did this test and the amount of time taken are marked
-in Minefield.cpp.
-
-Try to stick to the code convention that you find in the existing code.  Feel free to fix
-any inconsistencies.
-
-Getting the exact results provided below is not a requirement to �pass� the test. We are far more interested
-in code fixes, cleanup, style, improvements, issues uncovered, performance considerations, etc.
-
-In a moment you'll see why getting the same as the results listed below is not even going to be possible after a 
-certain point.
-
-The results below are provided as a guide. You should be able to replicate them after getting the code to compile and
-fixing any crashes. If you start to refactor or make significant changes then all bets are off. So if you consider 
-matching the results below to be an important first step, focus on that early before making any major changes.
-
-But again, matching the results is not the end goal of this test. You do not need to match the results. You need
-to show us your abilities as a programmer. Focus on things that you are unhappy with in the code, its layout and 
-structure. Explain your rationale for making those changes.
-
-In a real working environment you'd be able to ask the design intent behind how certain things work. You don't
-have that luxury doing this test. If there are certain things that really bug you or you're unsure how to proceed 
-feel free to reach out to HR and ask for clarification. 
-
-It's perfectly fine for you to identify the conundrum and pick what way you think it should be working. Again, document
-your insight and choice.
-
-And now for the reason why your results will not match the results below in the end anyway:
 
 Using the first letter of your surname as a key, implement one of the following feature additions:
 
@@ -78,18 +40,6 @@ N-R: Mines now move. Add a velocity to each mine, with a random magnitude betwee
 S-Z: If at least two enemy mines are destroyed, that same team gets to explode another of its mines. The team
      can continue to explode mines until less than two enemy mines are destroyed when exploding one of their mines.
 
-Feel free to design and implement this new feature in whatever way you deem most suitable.
-
-Usage of C++03 or later is permitted. Look to use and update to Modern C++ best practices if that is something
-you have experience in.
-
-It is preferred that Visual Studio 2015 or later is used as your development environment.  Visual Studio
-Community 2019 can be downloaded free from:
-http://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx
-A makefile is provided if you are compiling on linux.
-If another development environment is used please provide details.
-
-Note any and all performance tools and techniques used. 
 
 Do not modify the existing four command line input parameters used.  Feel free to add additional command line
 inputs if needed, but make sure they are not required.

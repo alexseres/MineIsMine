@@ -50,6 +50,7 @@ void Mine::Explode(ObjectManager& objectManager, std::string text)
         {
             if(!m_targetList[i]->IsDestroyed){
                 Mine* mine = static_cast<Mine*>(m_targetList[i]);
+
                 if(mine->GetInvulnerable())
                     continue;
 
