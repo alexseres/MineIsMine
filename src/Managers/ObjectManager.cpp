@@ -42,7 +42,7 @@ void ObjectManager::AddMineObject(unsigned int aObjectId, float aPosition[3], in
         }
     }
     //timer.finish();
-    
+
 	m_objects[m_numberOfObjects] = new Mine();
     m_objects[m_numberOfObjects]->m_objectId = aObjectId;
     m_objects[m_numberOfObjects]->m_team = aTeam;
@@ -85,7 +85,6 @@ Object* ObjectManager::GetObjectByObjectId(int aObjectId)
             return m_objects[i];
         }
     }
-
     return NULL;
 }
 
@@ -139,4 +138,31 @@ int ObjectManager::GetNumberOfObjectForTeam(int aTeam)
     }
 
     return count;
+}
+
+void ObjectManager::FindCurrentTargetsForObject(int objectId)
+{
+    Mine* mine = static_cast<Mine*>(GetObjectByObjectId(objectId));
+    if(!mine->GetActive())
+    {
+        return;
+    }
+    mine->m_targetList.clear();
+
+    for(int i = 0; i < GetNumberOfObjects(); ++i)
+    {
+        Object* pObject = GetObject(i);
+        if(pObject->GetObjectId() == mine->GetObjectId()) continue;
+        float distance = mine->GetDistance(mine->GetPosition(), pObject->GetPosition());
+        if(distance > mine->m_destructiveRadius)
+        {
+            continue;
+        }
+        
+        if(pObject->GetInvulnerable())
+            continue;
+
+        mine->m_targetList.push_back(pObject);
+        mine->targetNumber++;
+    }
 }

@@ -1,5 +1,6 @@
 #ifndef MINE_MINEFIELD_H
 #define MINE_MINEFIELD_H
+#pragma once
 #include <iostream>
 #include "../Models/WorkerThread.h"
 #include "../Utils/stdafx.h"
@@ -25,17 +26,10 @@ private:
     ScopedQueryPerformanceTimer timer;
     ObjectManager objectManager;
 
-
 public:
-//    static int s_numberOfWorkerThreadsActive;
-//    static int s_numberOfWorkerThreadsStarted;
-    int s_numberOfWorkerThreadsActive;
-    int s_numberOfWorkerThreadsStarted;
     static Mutex s_lock;
-    static void FindTargets(void* aIgnored);
-    void FindCurrentTargets(Mine* mine);
-    void Find_Targets();
-    void FindTargetsForAllMines(WorkerThread& wTread);
+    void Find_TargetsForAllMines();
+    void ConstructWorkThreads(WorkerThread& wTread);
     void announceWinner();
     void workerThreadPopulating(int numberOfWorkerThreads);
     void printInformationsOfObjects();

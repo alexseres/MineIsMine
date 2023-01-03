@@ -23,7 +23,6 @@ public:
     ObjectManager();
     ~ObjectManager();
     void SetStarterNumberOfObjects(){starterNumberOfObjects = m_numberOfObjects;}
-    static ObjectManager& GetSingleton();
     int GetNumberOfObjects() { return m_numberOfObjects; }
     int Get_m_numberOfobjects(){return m_numberOfObjects;}
     Object* GetObject(int aIndex) { return m_objects[aIndex]; }
@@ -37,7 +36,7 @@ public:
     int GetObjectWithMostEnemyTargets(int aTeam);
     int GetNumberOfObjectForTeam(int aTeam);
     int GetNumberofObjectsDestroyed(){return starterNumberOfObjects - m_numberOfObjects;}
-
+    void FindCurrentTargetsForObject(int index);
 };
 // - replaced private members to be up, and public to be down
 // - moved constructor from private to public

@@ -8,6 +8,7 @@
 #include "../Managers/ObjectManager.h"
 
 
+
 class Mine : public Object
 {
 // put m_... fields into private
@@ -20,7 +21,6 @@ public:
     void SetPosition(float aPosition[3]);
 
     float GetDistance(float aPositionA[3], float aPositionB[3]);
-//    void FindCurrentTargets();
     int GetNumberOfEnemyTargets();
     int GetTeam() { return m_team; }
     void Explode(ObjectManager& objectManager, std::string text);
@@ -33,6 +33,5 @@ public:
     float m_explosiveYield;
 
     std::vector<Object*> m_targetList;
-
-    bool MisFired();
+    bool MisFired(ObjectManager& objectManager);
 };

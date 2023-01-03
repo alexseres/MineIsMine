@@ -5,39 +5,9 @@
 Mutex Minefield::s_lock;
 std::vector<Mine *> allMinesThatHasTargets;
 
-void Minefield::FindCurrentTargets(Mine* mine)
-{
-    if(!mine->GetActive())
-    {
-        return;
-    }
 
 
-    mine->m_targetList.clear();
-
-    for(int i = 0; i < objectManager.GetNumberOfObjects(); ++i)
-    {
-        Object* pObject = objectManager.GetObject(i);
-        if(pObject->GetObjectId() == mine->GetObjectId()) continue;
-        float distance = mine->GetDistance(mine->GetPosition(), pObject->GetPosition());
-        if(distance > mine->m_destructiveRadius)
-        {
-            continue;
-        }
-
-        //TODO: Any other reasons to not add this object?
-
-        if(pObject->GetInvulnerable())
-            continue;
-
-        mine->m_targetList.push_back(pObject);
-        mine->targetNumber++;
-    }
-    if(mine->targetNumber > 0)
-        allMinesThatHasTargets.push_back(mine);
-}
-
-void Minefield::Find_Targets()
+void Minefield::Find_TargetsForAllMines()
 {
     MutexLock lock(s_lock);
     bool done = false;
@@ -46,8 +16,8 @@ void Minefield::Find_Targets()
         int index = objectManager.GetNextFindTargetsIndex();
         if(index < objectManager.GetNumberOfObjects())
         {
-            Mine* pMineObject = static_cast<Mine*>(objectManager.GetObject(index));
-            FindCurrentTargets(pMineObject);
+            int objectId = objectManager.GetObject(index)->GetObjectId();
+            objectManager.FindCurrentTargetsForObject(objectId);
         }
         else
         {
@@ -56,10 +26,10 @@ void Minefield::Find_Targets()
     }
 }
 
-void Minefield::FindTargetsForAllMines(WorkerThread& wTread)
+void Minefield::ConstructWorkThreads(WorkerThread& wTread)
 {
     wTread.init();
-    std::thread t_object(&Minefield::Find_Targets, this);
+    std::thread t_object(&Minefield::Find_TargetsForAllMines, this);
     t_object.join();
 }
 
@@ -91,7 +61,7 @@ void Minefield::runner(int numberOfWorkerThreads){
 
         for(int i = 0; i < numberOfWorkerThreads; i++)
         {
-            FindTargetsForAllMines(workerThreadList[i]);
+            ConstructWorkThreads(workerThreadList[i]);
 
         }
 
