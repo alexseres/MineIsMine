@@ -67,6 +67,7 @@ void Minefield::runner(int numberOfWorkerThreads){
         }
         for(int i = 0; i < g_numberOfTeams; i++)
         {
+
             int idWithMostEnemyTargets = objectManager.GetObjectWithMostEnemyTargets(i);
             Mine* pMine = static_cast<Mine *>(objectManager.GetObject(idWithMostEnemyTargets));
             if(pMine->targetNumber > 0)
@@ -78,13 +79,38 @@ void Minefield::runner(int numberOfWorkerThreads){
             std::string text =  "Mine with object_id = ";
             text+= std::to_string(pMine->GetObjectId());
             text += " exploded by having picked up with most target";
-            pMine->Explode(objectManager, text);
+
+            int explodedMineCounter = 0;
+            pMine->Explode(objectManager, text, explodedMineCounter);
+            IfExplodedMinesAreMoreThan2ChanceToExplodeAgain(explodedMineCounter, i);
         }
 
         if(targetsStillFound) printNumberOfMinesPerTeam();
         std::cout << "Number of objects in system: " << objectManager.Get_m_numberOfobjects() <<std::endl;
     }
 }
+
+void Minefield::IfExplodedMinesAreMoreThan2ChanceToExplodeAgain(int& explodedMineCounter, int teamNumber){
+    // There is a 30% chance If at least two enemy mines are destroyed, that same team gets to explode another of its mines. The team
+    // can continue to explode mines until less than two enemy mines are destroyed when exploding one of their mines.
+
+
+    if(GetRandomFloat32() < 0.3){
+        while(explodedMineCounter > 1){
+            explodedMineCounter = 0;
+            std::cout <<"Team " << teamNumber << " turns again, becuase the last explode series was more than 1" << std::endl;
+
+            int sameId= objectManager.GetObjectWithMostEnemyTargets(teamNumber);
+            Mine* anotherMostTargetedMine = static_cast<Mine *>(objectManager.GetObject(sameId));
+
+            std::string text =  "Mine with object_id = ";
+            text+= std::to_string(anotherMostTargetedMine->GetObjectId());
+            text += " exploded by having picked up with most target";
+            anotherMostTargetedMine->Explode(objectManager, text, explodedMineCounter);
+        }
+    }
+}
+
 
 void Minefield::workerThreadPopulating(int numberOfWorkerThreads){
     for(int i = 0; i < numberOfWorkerThreads; i++)

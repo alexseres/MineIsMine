@@ -83,6 +83,55 @@ bool Mine::MisFired(ObjectManager& objectManager)
 
 }
 
+void Mine::Explode(ObjectManager& objectManager, std::string text, int& explodedMineCounter)
+{
+    m_health = 0;
+    IsDestroyed = true;
+
+    if(m_alliedStealthList.size() > 0)
+    {
+        for(Object* pObject: m_alliedStealthList)
+            !pObject->hasStealth;
+    }
+
+    MisFired(objectManager);
+
+    if(targetNumber > 0)
+    {
+        for(unsigned int i = 0; i < m_targetList.size(); ++i)
+        {
+            if(!m_targetList[i]->IsDestroyed){
+                Mine* mine = static_cast<Mine*>(m_targetList[i]);
+
+                if(mine->GetInvulnerable())
+                    continue;
+
+                float distance = GetDistance(GetPosition(), m_targetList[i]->GetPosition());
+                // damage is inverse-squared of distance
+                float factor = 1.0f - (distance / m_destructiveRadius);
+                float damage = (factor * factor) * m_explosiveYield;
+
+                mine->TakeDamage(damage);
+                if(mine->m_health <= 0){
+                    explodedMineCounter++;
+                    targetNumber--;
+                    std::string text;
+                    text += "Mine with object_id = ";
+                    text += std::to_string(mine->GetObjectId());
+                    text += " exploded by reaction";
+                    mine->Explode(objectManager, text);
+                }
+                else{
+                    std::cout<< "Mine with object_id = " << std::to_string(mine->GetObjectId()) << " damaged, but not destroyed, current health: " << std::to_string(mine->m_health) << std::endl;
+                }
+            }
+        }
+    }
+
+    std::cout << text << std::endl;
+    objectManager.RemoveObject(GetObjectId());
+}
+
 void Mine::Explode(ObjectManager& objectManager, std::string text)
 {
     m_health = 0;
@@ -98,7 +147,6 @@ void Mine::Explode(ObjectManager& objectManager, std::string text)
 
     if(targetNumber > 0)
     {
-
         for(unsigned int i = 0; i < m_targetList.size(); ++i)
         {
             if(!m_targetList[i]->IsDestroyed){

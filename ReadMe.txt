@@ -38,7 +38,7 @@ Tips:
 - Mines now move. Add a velocity to each mine, with a random magnitude between zero and 10 units, in a random direction
      selected at time of mine creation. All mines move at the end of a turn.
 
-- If at least two enemy mines are destroyed, that same team gets to explode another of its mines. The team
+- There is a 30% chance If at least two enemy mines are destroyed, that same team gets to explode another of its mines. The team
      can continue to explode mines until less than two enemy mines are destroyed when exploding one of their mines.
 
 

@@ -39,6 +39,8 @@ public:
     int simulation(int aArgc, char* aArgv[]);
 
     void printNumberOfMinesPerTeam();
+
+    void IfExplodedMinesAreMoreThan2ChanceToExplodeAgain(int& explodedMineCounter, int teamNumber);
 };
 
 

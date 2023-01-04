@@ -170,6 +170,7 @@ void ObjectManager::GiveStealthForAlliedObjects(int objectId)
 }
 
 
+
 void ObjectManager::FindCurrentTargetsForObject(int objectId)
 {
     Mine* mine = static_cast<Mine*>(GetObjectByObjectId(objectId));
