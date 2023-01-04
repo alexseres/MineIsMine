@@ -163,6 +163,7 @@ void ObjectManager::GiveStealthForAlliedObjects(int objectId)
             continue;
         }
 
+        //std::cout<< "Mine with object_id = " << std::to_string(mine->GetObjectId()) << " has added allied mine with objectId: " << pObject->m_objectId << std::endl;
         pObject->hasStealth = true;
         mine->m_alliedStealthList.push_back(pObject);
     }
@@ -177,6 +178,7 @@ void ObjectManager::FindCurrentTargetsForObject(int objectId)
         return;
     }
     mine->m_targetList.clear();
+    mine->targetNumber = 0;
 
     for(int i = 0; i < GetNumberOfObjects();i++)
     {
@@ -202,5 +204,6 @@ void ObjectManager::FindCurrentTargetsForObject(int objectId)
         mine->m_targetList.push_back(pObject);
         mine->targetNumber++;
     }
+
 
 }

@@ -31,7 +31,7 @@ Tips:
 - There is a 20% chance that when a mine explodes it will misfire and its destructive radius is cut by 50%. There
      is an additional 10% chance that it will do the opposite and its destructive radius is now 150% the original value.
 
-- There is a 5% chance that a mine will provide stealth for allied mines within 200% of its destructive radius.
+- There is a 1% chance that a mine will provide stealth for allied mines within 200% of its destructive radius.
      Allied mines within the stealth radius will not be picked up in a targeting pass (similar to how invulnerable 
 	 mines are ignored) but can still be damaged if within the destructive radius of an exploding mine.
 

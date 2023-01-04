@@ -65,7 +65,6 @@ void Minefield::runner(int numberOfWorkerThreads){
             ConstructWorkThreads(workerThreadList[i]);
 
         }
-
         for(int i = 0; i < g_numberOfTeams; i++)
         {
             int idWithMostEnemyTargets = objectManager.GetObjectWithMostEnemyTargets(i);
@@ -74,11 +73,8 @@ void Minefield::runner(int numberOfWorkerThreads){
             {
                 targetsStillFound = true;
             }
-            else{
-                continue;
-            }
-            std::cout << "Turn " <<  numberOfTurns << ": Team " << i << " picks Mine with object id " << pMine->GetObjectId() << " with " << pMine->targetNumber << " targets to explode" << std::endl;
 
+            std::cout << "Turn " <<  numberOfTurns << ": Team " << i << " picks Mine with object id " << pMine->GetObjectId() << " with " << pMine->targetNumber << " targets to explode" << std::endl;
             std::string text =  "Mine with object_id = ";
             text+= std::to_string(pMine->GetObjectId());
             text += " exploded by having picked up with most target";

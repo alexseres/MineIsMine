@@ -25,7 +25,7 @@ public:
     void SetStarterNumberOfObjects(){starterNumberOfObjects = m_numberOfObjects;}
     int GetNumberOfObjects() { return m_numberOfObjects; }
     int Get_m_numberOfobjects(){return m_numberOfObjects;}
-    Object* GetObject(int aIndex) { return m_objects[aIndex]; }
+    Object* GetObject(int aIndex) { return m_objects[aIndex];}
     Object* GetObjectByObjectId(int aObjectId);
     bool IsValidObject(Object* apObject);
     void RemoveObject(unsigned int aObjectId);

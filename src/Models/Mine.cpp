@@ -44,15 +44,23 @@ bool Mine::MisFired(ObjectManager& objectManager)
 
     bool misFiredWhichReduceRadius = GetRandomFloat32() < 0.1;
     bool misFireWhhichIncreaseRadius = GetRandomFloat32() < 0.05;
-    int new_targetNumber = 0;
+
     std::vector<Object *> new_targetList;
+    int new_targetNumber = 0;
+    int old_targetnumber = targetNumber;
+
     if(misFireWhhichIncreaseRadius){
         m_destructiveRadius = m_destructiveRadius * 1.5;
         objectManager.FindCurrentTargetsForObject(m_objectId);
+        new_targetNumber = targetNumber;
+        if(new_targetNumber > old_targetnumber){
+            std::cout<< "Mine with object_id = " << std::to_string(GetObjectId()) << "  misfired, radius length 1.5x got bigger to " << std::to_string(m_destructiveRadius) << " and new target number is: "<< targetNumber << std::endl;
+        }
         return true;
     }
 
     else if(misFiredWhichReduceRadius){
+
         m_destructiveRadius = m_destructiveRadius *  0.5;
         for(unsigned int i = 0; i < m_targetList.size(); ++i)
         {
@@ -65,9 +73,13 @@ bool Mine::MisFired(ObjectManager& objectManager)
                 m_targetList = std::move(new_targetList);
             }
         }
+        if(new_targetNumber < old_targetnumber){
+            std::cout<< "Mine with object_id = " << std::to_string(GetObjectId()) << "  misfired, radius length halfed to " << std::to_string(m_destructiveRadius) << " and new target number is: "<< targetNumber << std::endl;
+        }
         return true;
     }
-    else return false;
+    else
+        return false;
 
 }
 
@@ -102,6 +114,7 @@ void Mine::Explode(ObjectManager& objectManager, std::string text)
 
                 mine->TakeDamage(damage);
                 if(mine->m_health <= 0){
+                    targetNumber--;
                     std::string text;
                     text += "Mine with object_id = ";
                     text += std::to_string(mine->GetObjectId());
