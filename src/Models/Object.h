@@ -15,11 +15,13 @@ public:
 
     bool GetInvulnerable();
     void SetInvulnerable(bool aInvulnerable);
+    bool hasStealth = false;
 
     virtual float* GetPosition() { return 0; }
     virtual void SetPosition(float pos[3]) {}
     unsigned int m_objectId;
     int m_team;
+    int GetTeam() { return m_team; }
 
     enum ObjectBitFlags
     {

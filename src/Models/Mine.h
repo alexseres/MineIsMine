@@ -22,7 +22,7 @@ public:
 
     float GetDistance(float aPositionA[3], float aPositionB[3]);
     int GetNumberOfEnemyTargets();
-    int GetTeam() { return m_team; }
+
     void Explode(ObjectManager& objectManager, std::string text);
     int targetNumber = 0;
     void TakeDamage(float aDamage);
@@ -33,5 +33,7 @@ public:
     float m_explosiveYield;
 
     std::vector<Object*> m_targetList;
+    std::vector<Object*> m_alliedStealthList;
     bool MisFired(ObjectManager& objectManager);
+
 };

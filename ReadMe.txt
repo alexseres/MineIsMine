@@ -22,22 +22,23 @@ Tips:
 -active mines, even if they are invulnerable, can be triggered to explode.
 -even a mine with no targets can be triggered to explode
 -chain reactions are possible (i.e. a fatally damaged mine will explode and damage its targets)
+
+
+
 -friendly fire is on (an exploding mine will damage both enemy and friendly targets within its destructive radius)
 
 
-Using the first letter of your surname as a key, implement one of the following feature additions:
-
-A-F: There is a 20% chance that when a mine explodes it will misfire and its destructive radius is cut by 50%. There
+- There is a 20% chance that when a mine explodes it will misfire and its destructive radius is cut by 50%. There
      is an additional 10% chance that it will do the opposite and its destructive radius is now 150% the original value.
 
-G-M: There is a 5% chance that a mine will provide stealth for allied mines within 200% of its destructive radius. 
+- There is a 5% chance that a mine will provide stealth for allied mines within 200% of its destructive radius.
      Allied mines within the stealth radius will not be picked up in a targeting pass (similar to how invulnerable 
 	 mines are ignored) but can still be damaged if within the destructive radius of an exploding mine.
 
-N-R: Mines now move. Add a velocity to each mine, with a random magnitude between zero and 10 units, in a random direction
+- Mines now move. Add a velocity to each mine, with a random magnitude between zero and 10 units, in a random direction
      selected at time of mine creation. All mines move at the end of a turn.
 
-S-Z: If at least two enemy mines are destroyed, that same team gets to explode another of its mines. The team
+- If at least two enemy mines are destroyed, that same team gets to explode another of its mines. The team
      can continue to explode mines until less than two enemy mines are destroyed when exploding one of their mines.
 
 

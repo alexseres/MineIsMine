@@ -37,6 +37,8 @@ public:
     int GetNumberOfObjectForTeam(int aTeam);
     int GetNumberofObjectsDestroyed(){return starterNumberOfObjects - m_numberOfObjects;}
     void FindCurrentTargetsForObject(int index);
+
+    void GiveStealthForAlliedObjects(int objectId);
 };
 // - replaced private members to be up, and public to be down
 // - moved constructor from private to public

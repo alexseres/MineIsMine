@@ -74,8 +74,6 @@ void ObjectManager::RemoveObject(unsigned int aObjectId)
     }
 }
 
-
-
 Object* ObjectManager::GetObjectByObjectId(int aObjectId)
 {
     for(unsigned int i = 0; i < m_numberOfObjects; i++)
@@ -120,7 +118,6 @@ int ObjectManager::GetObjectWithMostEnemyTargets(int aTeam)
 
             if(static_cast<Mine *>(m_objects[currentObjectIndex])->targetNumber <= static_cast<Mine *>(m_objects[i])->targetNumber)
                 currentObjectIndex = i;
-
         }
     }
     return currentObjectIndex;
@@ -140,6 +137,38 @@ int ObjectManager::GetNumberOfObjectForTeam(int aTeam)
     return count;
 }
 
+
+void ObjectManager::GiveStealthForAlliedObjects(int objectId)
+{
+    // There is a 1% chance that a mine will provide stealth for allied mines within 200% of its destructive radius.
+    // Allied mines within the stealth radius will not be picked up in a targeting pass (similar to how invulnerable
+    // mines are ignored) but can still be damaged if within the destructive radius of an exploding mine.
+    if(GetRandomFloat32() > 0.01){
+        return;
+    }
+
+    Mine* mine = static_cast<Mine*>(GetObjectByObjectId(objectId));
+    for(int i = 0; i < GetNumberOfObjects();i++)
+    {
+        Object* pObject = GetObject(i);
+
+        if(pObject->GetTeam() != mine->GetTeam())
+        {
+            continue;
+        }
+
+        float distance = mine->GetDistance(mine->GetPosition(), pObject->GetPosition());
+        if(distance > (mine->m_destructiveRadius * 2))
+        {
+            continue;
+        }
+
+        pObject->hasStealth = true;
+        mine->m_alliedStealthList.push_back(pObject);
+    }
+}
+
+
 void ObjectManager::FindCurrentTargetsForObject(int objectId)
 {
     Mine* mine = static_cast<Mine*>(GetObjectByObjectId(objectId));
@@ -149,20 +178,29 @@ void ObjectManager::FindCurrentTargetsForObject(int objectId)
     }
     mine->m_targetList.clear();
 
-    for(int i = 0; i < GetNumberOfObjects(); ++i)
+    for(int i = 0; i < GetNumberOfObjects();i++)
     {
         Object* pObject = GetObject(i);
-        if(pObject->GetObjectId() == mine->GetObjectId()) continue;
+
+        if(pObject->m_objectId== mine->m_objectId)
+        {
+            continue;
+        }
+
+        if(pObject->GetInvulnerable())
+            continue;
+
         float distance = mine->GetDistance(mine->GetPosition(), pObject->GetPosition());
         if(distance > mine->m_destructiveRadius)
         {
             continue;
         }
-        
-        if(pObject->GetInvulnerable())
+        if(pObject->hasStealth){
             continue;
+        }
 
         mine->m_targetList.push_back(pObject);
         mine->targetNumber++;
     }
+
 }

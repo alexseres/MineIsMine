@@ -18,6 +18,7 @@ void Minefield::Find_TargetsForAllMines()
         {
             int objectId = objectManager.GetObject(index)->GetObjectId();
             objectManager.FindCurrentTargetsForObject(objectId);
+            objectManager.GiveStealthForAlliedObjects(objectId);
         }
         else
         {

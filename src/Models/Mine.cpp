@@ -47,7 +47,6 @@ bool Mine::MisFired(ObjectManager& objectManager)
     int new_targetNumber = 0;
     std::vector<Object *> new_targetList;
     if(misFireWhhichIncreaseRadius){
-
         m_destructiveRadius = m_destructiveRadius * 1.5;
         objectManager.FindCurrentTargetsForObject(m_objectId);
         return true;
@@ -77,6 +76,12 @@ void Mine::Explode(ObjectManager& objectManager, std::string text)
     m_health = 0;
     IsDestroyed = true;
 
+    if(m_alliedStealthList.size() > 0)
+    {
+        for(Object* pObject: m_alliedStealthList)
+            !pObject->hasStealth;
+    }
+
     MisFired(objectManager);
 
     if(targetNumber > 0)
@@ -89,7 +94,6 @@ void Mine::Explode(ObjectManager& objectManager, std::string text)
 
                 if(mine->GetInvulnerable())
                     continue;
-
 
                 float distance = GetDistance(GetPosition(), m_targetList[i]->GetPosition());
                 // damage is inverse-squared of distance
