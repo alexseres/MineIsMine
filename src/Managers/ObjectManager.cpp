@@ -4,6 +4,8 @@
 #include "../Models/Object.h"
 #include "../Models/Mine.h"
 
+enum directionToMovePossibilities{x,y,z};
+
 ObjectManager::ObjectManager()
     : m_numberOfObjects(0)
     , m_nextFindTargetIndex(0)
@@ -17,6 +19,23 @@ ObjectManager::~ObjectManager()
     }
 }
 
+void ObjectManager::ObjectMove(){
+    // Mines now move. Add a velocity to each mine, with a random magnitude between zero and 15 units, in a random direction
+    // selected at time of mine creation. All mines move at the end of a turn.
+
+    for(unsigned int i = 0; i < m_numberOfObjects; i++)
+    {
+        float* oldPositions = m_objects[i]->GetPosition();
+        float newPositions[3];
+        for(int j = 0;j < 3;j++){
+            if(j == m_objects[i]->GetDirectionToMove())
+                newPositions[j] = oldPositions[j] + m_objects[i]->GetDirectionLength();
+            else
+                newPositions[j] = oldPositions[j];
+        }
+        m_objects[i]->SetPosition(newPositions);
+    }
+}
 
 void ObjectManager::AddMineObject(unsigned int aObjectId, float aPosition[3], int aTeam)
 {
@@ -35,7 +54,8 @@ void ObjectManager::AddMineObject(unsigned int aObjectId, float aPosition[3], in
             pMineObject->SetActive(m_objects[i]->GetActive());
             pMineObject->SetInvulnerable(m_objects[i]->GetInvulnerable());
             pMineObject->m_destructiveRadius = static_cast<Mine*>(m_objects[i])->m_destructiveRadius;
-
+            pMineObject->SetDirectionToMove(m_objects[i]->GetDirectionToMove());
+            pMineObject->SetDirectionLength(m_objects[i]->GetDirectionLength());
             delete m_objects[i];
             m_objects[i] = pMineObject;
             return;
@@ -51,6 +71,8 @@ void ObjectManager::AddMineObject(unsigned int aObjectId, float aPosition[3], in
     GetRandomFloat32() < 0.2f ? m_objects[m_numberOfObjects]->m_bitFlags = Object::OBF_INVULNERABLE: m_objects[m_numberOfObjects]->m_bitFlags = Object::OBF_ACTIVE;
     m_objects[m_numberOfObjects]->SetActive(GetRandomFloat32() < 0.95f);
     m_objects[m_numberOfObjects]->SetInvulnerable(GetRandomFloat32() > 0.80f);
+    m_objects[m_numberOfObjects]->SetDirectionToMove(GetRandomFloat32_Range(x,z));
+    m_objects[m_numberOfObjects]->SetDirectionLength(GetRandomFloat32_Range(-15,15));
     m_numberOfObjects++;
     return;
 }

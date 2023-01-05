@@ -3,10 +3,8 @@
 #include <iostream>
 #include <random>
 
-//static std::mt19937 s_mersenneTwisterRand(std::mt19937::default_seed);
 std::random_device rd;
 std::mt19937 gen(rd());
-//static std::mt19937 s_mersenneTwisterRand(nullptr_t);
 
 void SetRandomSeed(const unsigned int aSeed)
 {

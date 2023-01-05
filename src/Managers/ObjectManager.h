@@ -39,6 +39,8 @@ public:
     void FindCurrentTargetsForObject(int index);
 
     void GiveStealthForAlliedObjects(int objectId);
+
+    void ObjectMove();
 };
 // - replaced private members to be up, and public to be down
 // - moved constructor from private to public

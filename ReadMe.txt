@@ -35,7 +35,7 @@ Tips:
      Allied mines within the stealth radius will not be picked up in a targeting pass (similar to how invulnerable 
 	 mines are ignored) but can still be damaged if within the destructive radius of an exploding mine.
 
-- Mines now move. Add a velocity to each mine, with a random magnitude between zero and 10 units, in a random direction
+- Mines now move. Add a velocity to each mine, with a random magnitude between zero and 15 units, in a random direction
      selected at time of mine creation. All mines move at the end of a turn.
 
 - There is a 30% chance If at least two enemy mines are destroyed, that same team gets to explode another of its mines. The team

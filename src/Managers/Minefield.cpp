@@ -59,7 +59,7 @@ void Minefield::runner(int numberOfWorkerThreads){
         numberOfTurns++;
         targetsStillFound = false;
         objectManager.ResetNextFindTargetIndex();
-
+        objectManager.ObjectMove();
         for(int i = 0; i < numberOfWorkerThreads; i++)
         {
             ConstructWorkThreads(workerThreadList[i]);
@@ -93,7 +93,6 @@ void Minefield::runner(int numberOfWorkerThreads){
 void Minefield::IfExplodedMinesAreMoreThan2ChanceToExplodeAgain(int& explodedMineCounter, int teamNumber){
     // There is a 30% chance If at least two enemy mines are destroyed, that same team gets to explode another of its mines. The team
     // can continue to explode mines until less than two enemy mines are destroyed when exploding one of their mines.
-
 
     if(GetRandomFloat32() < 0.3){
         while(explodedMineCounter > 1){

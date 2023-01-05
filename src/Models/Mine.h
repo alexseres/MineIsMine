@@ -24,7 +24,7 @@ public:
     int GetNumberOfEnemyTargets();
 
     void Explode(ObjectManager& objectManager, std::string text, int& explodedMineCounter);
-    void Explode(ObjectManager& objectManager, std::string text );
+    void Explode(ObjectManager& objectManager, std::string text);
     int targetNumber = 0;
     void TakeDamage(float aDamage);
 

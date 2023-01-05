@@ -2,6 +2,8 @@
 #include "Object.h"
 
 
+
+
 bool Object::GetActive()
 {
     return m_bitFlags & OBF_ACTIVE;
