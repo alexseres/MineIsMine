@@ -5,7 +5,7 @@
 
 Mine::Mine()
 {
-    m_team = 0;
+    SetTeam(0);
     m_destructiveRadius = 0.0f; 
     m_health = 100.0f;
     m_explosiveYield = 500;
@@ -51,7 +51,7 @@ bool Mine::MisFired(ObjectManager& objectManager)
 
     if(misFireWhhichIncreaseRadius){
         m_destructiveRadius = m_destructiveRadius * 1.5;
-        objectManager.FindCurrentTargetsForObject(m_objectId);
+        objectManager.FindCurrentTargetsForObject(GetObjectId());
         new_targetNumber = targetNumber;
         if(new_targetNumber > old_targetnumber){
             std::cout<< "Mine with object_id = " << std::to_string(GetObjectId()) << "  misfired, radius length 1.5x got bigger to " << std::to_string(m_destructiveRadius) << " and new target number is: "<< targetNumber << std::endl;

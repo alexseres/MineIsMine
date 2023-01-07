@@ -4,7 +4,7 @@
 #include "../Models/Object.h"
 #include "../Models/Mine.h"
 
-enum directionToMovePossibilities{x,y,z};
+enum directionToMovePossibilities{x=0,y,z};
 
 ObjectManager::ObjectManager()
     : m_numberOfObjects(0)
@@ -43,17 +43,17 @@ void ObjectManager::AddMineObject(unsigned int aObjectId, float aPosition[3], in
     //timer.start();
     for(unsigned int i = 0; i < m_numberOfObjects; i++)
     {
-        if(m_objects[i]->m_objectId == aObjectId)
+        if(m_objects[i]->GetObjectId() == aObjectId)
         {
             // If objectId matches an existing entry then just consider it as getting updated (even potentially switched to a new team)
             Mine* pMineObject = new Mine();
-            pMineObject->m_objectId = m_objects[i]->m_objectId;
-            pMineObject->m_team = aTeam;
+            pMineObject->SetObjectId(m_objects[i]->GetObjectId());
+            pMineObject->SetTeam(aTeam);
             pMineObject->SetPosition(aPosition);
             pMineObject->m_bitFlags = m_objects[i]->m_bitFlags;
             pMineObject->SetActive(m_objects[i]->GetActive());
             pMineObject->SetInvulnerable(m_objects[i]->GetInvulnerable());
-            pMineObject->m_destructiveRadius = static_cast<Mine*>(m_objects[i])->m_destructiveRadius;
+            pMineObject->SetDestructiveRadius(static_cast<Mine*>(m_objects[i])->GetDestructiveRadius());
             pMineObject->SetDirectionToMove(m_objects[i]->GetDirectionToMove());
             pMineObject->SetDirectionLength(m_objects[i]->GetDirectionLength());
             delete m_objects[i];
@@ -64,10 +64,10 @@ void ObjectManager::AddMineObject(unsigned int aObjectId, float aPosition[3], in
     //timer.finish();
 
 	m_objects[m_numberOfObjects] = new Mine();
-    m_objects[m_numberOfObjects]->m_objectId = aObjectId;
-    m_objects[m_numberOfObjects]->m_team = aTeam;
+    m_objects[m_numberOfObjects]->SetObjectId(aObjectId);
+    m_objects[m_numberOfObjects]->SetTeam(aTeam);
     m_objects[m_numberOfObjects]->SetPosition(aPosition);
-    static_cast<Mine*>(m_objects[m_numberOfObjects])->m_destructiveRadius = GetRandomFloat32_Range(0, 100.0f);
+    static_cast<Mine*>(m_objects[m_numberOfObjects])->SetDestructiveRadius(GetRandomFloat32_Range(0, 100.0f));
     GetRandomFloat32() < 0.2f ? m_objects[m_numberOfObjects]->m_bitFlags = Object::OBF_INVULNERABLE: m_objects[m_numberOfObjects]->m_bitFlags = Object::OBF_ACTIVE;
     m_objects[m_numberOfObjects]->SetActive(GetRandomFloat32() < 0.95f);
     m_objects[m_numberOfObjects]->SetInvulnerable(GetRandomFloat32() > 0.80f);
@@ -84,7 +84,7 @@ void ObjectManager::RemoveObject(unsigned int aObjectId)
 
     for(unsigned int i = 0; i < m_numberOfObjects; i++)
     {
-        if(m_objects[i]->m_objectId == aObjectId)
+        if(m_objects[i]->GetObjectId() == aObjectId)
         {
             //delete m_objects[i];
             // Do a fast remove and replace this location with object currently at end
@@ -100,7 +100,7 @@ Object* ObjectManager::GetObjectByObjectId(int aObjectId)
 {
     for(unsigned int i = 0; i < m_numberOfObjects; i++)
     {
-        if(m_objects[i]->m_objectId == aObjectId)
+        if(m_objects[i]->GetObjectId() == aObjectId)
         {
             return m_objects[i];
         }
@@ -133,7 +133,7 @@ int ObjectManager::GetObjectWithMostEnemyTargets(int aTeam)
     int currentObjectIndex = 0;
     for(unsigned int i = 0; i < m_numberOfObjects; i++)
     {
-        if(m_objects[i]->m_team == aTeam)
+        if(m_objects[i]->GetTeam() == aTeam)
         {
             if(!static_cast<Mine *>(m_objects[currentObjectIndex])->GetActive())
                 continue;
@@ -150,7 +150,7 @@ int ObjectManager::GetNumberOfObjectForTeam(int aTeam)
     int count = 0;
     for(unsigned int i = 0; i < m_numberOfObjects; i++)
     {
-        if(m_objects[i]->m_team == aTeam)
+        if(m_objects[i]->GetTeam() == aTeam)
         {
             count++;
         }
@@ -180,7 +180,7 @@ void ObjectManager::GiveStealthForAlliedObjects(int objectId)
         }
 
         float distance = mine->GetDistance(mine->GetPosition(), pObject->GetPosition());
-        if(distance > (mine->m_destructiveRadius * 2))
+        if(distance > (mine->GetDestructiveRadius() * 2))
         {
             continue;
         }
@@ -207,7 +207,7 @@ void ObjectManager::FindCurrentTargetsForObject(int objectId)
     {
         Object* pObject = GetObject(i);
 
-        if(pObject->m_objectId== mine->m_objectId)
+        if(pObject->GetObjectId()== mine->GetObjectId())
         {
             continue;
         }
@@ -216,7 +216,7 @@ void ObjectManager::FindCurrentTargetsForObject(int objectId)
             continue;
 
         float distance = mine->GetDistance(mine->GetPosition(), pObject->GetPosition());
-        if(distance > mine->m_destructiveRadius)
+        if(distance > mine->GetDestructiveRadius())
         {
             continue;
         }

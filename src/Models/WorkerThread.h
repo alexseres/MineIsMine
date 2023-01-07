@@ -16,7 +16,6 @@
 class WorkerThread
 {
 public:
-    pthread_t threadId = 0;
     pthread_attr_t attributes;
     void init()
     {
